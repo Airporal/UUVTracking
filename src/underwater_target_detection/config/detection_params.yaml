@@ -1,0 +1,27 @@
+---
+# Detection node parameters for underwater_target_detection
+
+detection_node:
+  ros__parameters:
+    # Path to the YOLO model weights file (relative or absolute)
+    model_path: "yolov8n.pt"
+
+    # Minimum confidence threshold for detections [0.0, 1.0]
+    confidence_threshold: 0.5
+
+    # List of COCO class IDs to track (empty list = all classes)
+    # 0 = person, 14 = bird, 16 = cat, etc.
+    target_classes: [0]
+
+    # Inference device: "cpu", "cuda:0", "mps"
+    device: "cpu"
+
+    # Number of consecutive lost frames before tracking_status becomes False
+    max_lost_frames: 30
+
+    # Whether to publish an annotated debug image
+    publish_debug_image: true
+
+    # Input camera topic
+    image_topic: "/camera/image_raw"
+    camera_info_topic: "/camera/camera_info"
