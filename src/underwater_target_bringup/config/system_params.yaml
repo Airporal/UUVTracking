@@ -1,0 +1,22 @@
+---
+# System-level configuration for the full target-following stack.
+# Values here override the per-package defaults.
+
+# Camera configuration
+camera:
+  image_topic: "/camera/image_raw"
+  camera_info_topic: "/camera/camera_info"
+  image_width: 640
+  image_height: 480
+  frame_rate: 30.0
+
+# Vehicle constraints (used by the control node)
+vehicle:
+  max_surge_vel: 0.5       # m/s
+  max_sway_vel: 0.3        # m/s
+  max_heave_vel: 0.3       # m/s
+  max_yaw_rate: 0.5        # rad/s
+  max_pitch_rate: 0.3      # rad/s
+
+# Target class to follow (COCO class ID; 0 = person)
+target_class_id: 0

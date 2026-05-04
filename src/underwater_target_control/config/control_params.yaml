@@ -1,0 +1,56 @@
+---
+# Control node parameters for underwater_target_control
+
+control_node:
+  ros__parameters:
+    # Controller backend: "ibvs" or "pid"
+    controller_type: "ibvs"
+
+    # Maximum linear velocity (m/s) — applied to all axes
+    max_linear_vel: 0.5
+
+    # Maximum angular velocity (rad/s) — applied to all axes
+    max_angular_vel: 0.5
+
+    # Watchdog: zero-command if no detection update received within this time (s)
+    watchdog_timeout: 1.0
+
+    # Control loop rate (Hz)
+    control_rate: 20.0
+
+    # ---------------------------------------------------------------------------
+    # IBVS controller parameters (used when controller_type = "ibvs")
+    # ---------------------------------------------------------------------------
+    ibvs:
+      # Proportional visual-servoing gain
+      lambda_gain: 0.5
+      # Desired normalised target position in the image [-1, 1]
+      desired_image_x: 0.0
+      desired_image_y: 0.0
+      # Desired stand-off distance (m); set < 0 to disable distance control
+      desired_distance: 2.0
+      # Gain for distance control
+      distance_gain: 0.3
+      # Image-plane error dead-band (normalised units)
+      deadband: 0.05
+
+    # ---------------------------------------------------------------------------
+    # PID controller parameters (used when controller_type = "pid")
+    # ---------------------------------------------------------------------------
+    pid:
+      # Yaw (horizontal centering) PID gains
+      yaw_kp: 0.8
+      yaw_ki: 0.0
+      yaw_kd: 0.05
+      # Heave (vertical centering) PID gains
+      heave_kp: 0.5
+      heave_ki: 0.0
+      heave_kd: 0.02
+      # Surge (distance control) PID gains
+      surge_kp: 0.3
+      surge_ki: 0.0
+      surge_kd: 0.01
+      # Desired stand-off distance (m)
+      desired_distance: 2.0
+      # Image-plane error dead-band (normalised units)
+      deadband: 0.05
