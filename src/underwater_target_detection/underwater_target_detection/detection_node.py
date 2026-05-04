@@ -22,7 +22,7 @@ Publications
 from __future__ import annotations
 
 import threading
-from typing import Optional
+from typing import List, Optional
 
 import cv2
 import numpy as np
@@ -205,20 +205,9 @@ class DetectionNode(LifecycleNode):
             stamp = msg.header.stamp
 
             # TargetDetection
-            det_msg = TargetDetection()
-            det_msg.header.stamp = stamp
-            det_msg.header.frame_id = msg.header.frame_id
-            det_msg.class_id = best.class_id
-            det_msg.class_name = best.class_name
-            det_msg.confidence = best.confidence
-            det_msg.bbox_center_x = best.bbox_center_x
-            det_msg.bbox_center_y = best.bbox_center_y
-            det_msg.bbox_width = best.bbox_width
-            det_msg.bbox_height = best.bbox_height
-            det_msg.image_x = best.image_x
-            det_msg.image_y = best.image_y
-            det_msg.estimated_distance = best.estimated_distance
-            det_msg.is_valid = True
+            det_msg = self._build_target_detection_msg(
+                best, stamp, msg.header.frame_id
+            )
             self._detection_pub.publish(det_msg)
 
             # Detection2DArray (vision_msgs)
@@ -271,27 +260,39 @@ class DetectionNode(LifecycleNode):
         state_msg.state_label = "TRACKING" if self._is_tracking else "LOST"
         if detections:
             best = max(detections, key=lambda d: d.confidence)
-            det_msg = TargetDetection()
-            det_msg.header = state_msg.header
-            det_msg.class_id = best.class_id
-            det_msg.class_name = best.class_name
-            det_msg.confidence = best.confidence
-            det_msg.bbox_center_x = best.bbox_center_x
-            det_msg.bbox_center_y = best.bbox_center_y
-            det_msg.bbox_width = best.bbox_width
-            det_msg.bbox_height = best.bbox_height
-            det_msg.image_x = best.image_x
-            det_msg.image_y = best.image_y
-            det_msg.estimated_distance = best.estimated_distance
-            det_msg.is_valid = True
-            state_msg.detection = det_msg
+            state_msg.detection = self._build_target_detection_msg(
+                best, state_msg.header.stamp, state_msg.header.frame_id
+            )
         self._tracking_state_pub.publish(state_msg)
 
     # ------------------------------------------------------------------
     # Visualisation helpers
     # ------------------------------------------------------------------
 
-    def _annotate(self, image: np.ndarray, detections) -> np.ndarray:
+    def _build_target_detection_msg(
+        self,
+        det: Detection,
+        stamp,
+        frame_id: str,
+    ) -> TargetDetection:
+        """Populate and return a TargetDetection message from a Detection object."""
+        msg = TargetDetection()
+        msg.header.stamp = stamp
+        msg.header.frame_id = frame_id
+        msg.class_id = det.class_id
+        msg.class_name = det.class_name
+        msg.confidence = det.confidence
+        msg.bbox_center_x = det.bbox_center_x
+        msg.bbox_center_y = det.bbox_center_y
+        msg.bbox_width = det.bbox_width
+        msg.bbox_height = det.bbox_height
+        msg.image_x = det.image_x
+        msg.image_y = det.image_y
+        msg.estimated_distance = det.estimated_distance
+        msg.is_valid = True
+        return msg
+
+    def _annotate(self, image: np.ndarray, detections: List[Detection]) -> np.ndarray:
         """Draw bounding boxes and labels on a copy of *image*."""
         annotated = image.copy()
         h, w = annotated.shape[:2]

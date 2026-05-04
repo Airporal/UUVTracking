@@ -108,9 +108,11 @@ class TestYOLODetector:
         try:
             detector.load_model("nonexistent_model.pt")
         except Exception as exc:  # noqa: BLE001
-            # Ultralytics may raise a file-not-found error when installed
             if is_available():
-                # That's acceptable — model file doesn't exist in the test env
-                assert "nonexistent_model.pt" in str(exc) or True
+                # When ultralytics is installed a missing model file is expected;
+                # verify the error message references the model path.
+                assert "nonexistent_model.pt" in str(exc), (
+                    f"Unexpected exception from load_model: {exc}"
+                )
             else:
-                pytest.fail(f"load_model raised unexpectedly: {exc}")
+                pytest.fail(f"load_model raised unexpectedly without ultralytics: {exc}")

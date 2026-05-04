@@ -233,7 +233,7 @@ class ControlNode(LifecycleNode):
     # Topic callbacks
     # ------------------------------------------------------------------
 
-    def _pose_callback(self, msg) -> None:
+    def _pose_callback(self, msg: Point) -> None:
         self._last_image_x = msg.x
         self._last_image_y = msg.y
         self._last_distance = msg.z
